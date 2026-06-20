@@ -241,6 +241,172 @@ body {
   margin-bottom: 12px;
 }
 
+/* 캘린더 */
+.cal-wrap {
+  display: grid;
+  gap: 24px;
+  margin-top: 24px;
+}
+@media (min-width: 960px) {
+  .cal-wrap { grid-template-columns: 1fr 1fr; }
+}
+
+.cal-month {
+  background: var(--color-card);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.cal-month__title {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  margin-bottom: 16px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-slate);
+  padding: 4px 0 8px;
+  letter-spacing: 0.04em;
+}
+.cal-header--weekend { color: var(--color-mist); }
+
+.cal-cell {
+  min-height: 56px;
+  padding: 5px 4px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cal-cell--empty { background: transparent; }
+.cal-cell--weekend { background: #f5f5f5; }
+.cal-cell--missing { background: #fef7e0; }
+.cal-cell--has-receipt { background: #e6f4ea; cursor: pointer; }
+.cal-cell--has-receipt:hover { background: #ceead6; }
+.cal-cell--today .cal-cell__date {
+  background: var(--color-blue);
+  color: #fff;
+  border-radius: 50%;
+}
+
+.cal-cell__date {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+.cal-cell--weekend .cal-cell__date { color: #bbb; }
+
+.cal-cell__amount {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-success);
+  line-height: 1.3;
+}
+.cal-cell__charge {
+  font-size: 9px;
+  color: var(--color-slate);
+  line-height: 1.3;
+}
+.cal-cell__missing {
+  font-size: 9px;
+  color: #b06000;
+}
+.cal-cell__count {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+/* 모달 */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+}
+.modal {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-mist);
+  position: sticky;
+  top: 0;
+  background: var(--color-card);
+}
+.modal__title { font-size: 16px; font-weight: 500; }
+.modal__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--color-slate);
+  padding: 4px 8px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.modal__close:hover { background: var(--color-canvas); }
+.modal__body { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+.receipt-item {
+  border: 1px solid var(--color-mist);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.receipt-item__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.receipt-item__thumb {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--color-mist);
+}
+
+.btn--sm { height: 32px; padding: 0 16px; font-size: 13px; }
+.btn--danger {
+  background: transparent;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  flex-shrink: 0;
+}
+.btn--danger:hover { background: rgba(217,48,37,0.08); }
+
 /* 유틸 */
 .text-muted { color: var(--color-slate); font-size: 14px; }
 .text-blue { color: var(--color-blue); }

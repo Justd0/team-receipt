@@ -11,6 +11,9 @@ const ocrStatus = document.getElementById('ocrStatus');
 const dateInput = document.getElementById('dateInput');
 const amountInput = document.getElementById('amountInput');
 const memberGroup = document.getElementById('memberGroup');
+const summaryPreview = document.getElementById('summaryPreview');
+const summaryDate = document.getElementById('summaryDate');
+const summaryAmount = document.getElementById('summaryAmount');
 const chargePreview = document.getElementById('chargePreview');
 const chargeAmount = document.getElementById('chargeAmount');
 const saveBtn = document.getElementById('saveBtn');
@@ -41,6 +44,16 @@ async function renderMembers() {
   }
 }
 
+function updateSummary() {
+  const date = dateInput.value;
+  const amount = parseInt(amountInput.value, 10);
+  if (date || amount) {
+    summaryPreview.style.display = 'block';
+    summaryDate.textContent = date || '-';
+    summaryAmount.textContent = amount > 0 ? amount.toLocaleString() + '원' : '-';
+  }
+}
+
 function updateChargePreview() {
   const checked = memberGroup.querySelectorAll('input:checked').length;
   if (checked > 0) {
@@ -49,6 +62,7 @@ function updateChargePreview() {
   } else {
     chargePreview.style.display = 'none';
   }
+  updateSummary();
 }
 
 async function handleFile(file) {
@@ -60,21 +74,23 @@ async function handleFile(file) {
   });
   chargePreview.style.display = 'none';
 
-  currentFile = file;
-
-  // 미리보기
-  previewImg.src = URL.createObjectURL(file);
-  previewSection.style.display = 'block';
-  ocrStatus.style.display = 'block';
-  ocrStatus.innerHTML = '<span class="spinner"></span> HEIC 변환 및 OCR 분석 중...';
-  saveBtn.disabled = true;
-
+  // HEIC 변환 후 미리보기 즉시 표시
   try {
     const prepared = await prepareImage(file);
     currentFile = prepared;
     previewImg.src = URL.createObjectURL(prepared);
+  } catch (e) {
+    currentFile = file;
+    previewImg.src = URL.createObjectURL(file);
+  }
 
-    const { date, amount } = await extractReceiptData(prepared);
+  previewSection.style.display = 'block';
+  ocrStatus.style.display = 'block';
+  ocrStatus.innerHTML = '<span class="spinner"></span> OCR 분석 중...';
+  saveBtn.disabled = true;
+
+  try {
+    const { date, amount } = await extractReceiptData(currentFile);
     dateInput.value = date || formatDate(new Date());
     amountInput.value = amount || '';
     ocrStatus.innerHTML = '✅ OCR 완료. 내용을 확인하고 수정하세요.';
@@ -84,8 +100,13 @@ async function handleFile(file) {
     amountInput.value = '';
   } finally {
     saveBtn.disabled = false;
+    updateSummary();
   }
 }
+
+// 날짜·금액 입력 시 요약 카드 실시간 업데이트
+dateInput.addEventListener('input', updateSummary);
+amountInput.addEventListener('input', updateSummary);
 
 // 드래그앤드롭
 uploadZone.addEventListener('click', () => fileInput.click());

@@ -40,3 +40,16 @@ export async function saveReceipt({ date, amount, imageUrl, participants }) {
     .insert({ date, amount, image_url: imageUrl, participants });
   if (error) throw error;
 }
+
+export async function deleteReceipt(id, imageUrl) {
+  if (imageUrl) {
+    const marker = '/receipts/';
+    const idx = imageUrl.indexOf(marker);
+    if (idx !== -1) {
+      const path = imageUrl.slice(idx + marker.length);
+      await supabase.storage.from('receipts').remove([path]);
+    }
+  }
+  const { error } = await supabase.from('receipts').delete().eq('id', id);
+  if (error) throw error;
+}

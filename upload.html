@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <script src="js/auth.js"></script>
   <nav class="nav">
     <div class="nav__inner">
       <a href="index.html" class="nav__logo">🧾 Team Receipt</a>
@@ -59,10 +60,13 @@
           <div class="checkbox-group" id="memberGroup"></div>
         </div>
 
-        <!-- 청구 금액 미리보기 -->
-        <div class="card card--sm mt-16" id="chargePreview" style="display:none">
-          <span class="text-muted">청구 금액 (선택 인원 × 12,000원): </span>
-          <strong id="chargeAmount" class="text-blue">0원</strong>
+        <!-- 입력 확인 요약 -->
+        <div class="card card--sm mt-16" id="summaryPreview" style="display:none">
+          <div style="display:flex; flex-direction:column; gap:6px; font-size:14px;">
+            <div><span class="text-muted">날짜: </span><strong id="summaryDate">-</strong></div>
+            <div><span class="text-muted">영수증 금액: </span><strong id="summaryAmount">-</strong></div>
+            <div id="chargePreview" style="display:none"><span class="text-muted">청구 금액 (선택 인원 × 12,000원): </span><strong id="chargeAmount" class="text-blue">0원</strong></div>
+          </div>
         </div>
 
         <!-- 저장 버튼 -->

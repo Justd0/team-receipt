@@ -1,3 +1,3 @@
 // Supabase 프로젝트 설정값으로 교체
-export const SUPABASE_URL = 'https://xxxxxxxxxxx.supabase.co';
-export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+export const SUPABASE_URL = 'https://zxwuoryifxtxqfluhxxs.supabase.co';
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4d3VvcnlpZnh0eHFmbHVoeHhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NTMzMDAsImV4cCI6MjA5NzUyOTMwMH0.IacoCLfAgrLF0L6X5YyI6si9S7zdIFhhdFBSfU3lWRw';
