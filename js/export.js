@@ -97,11 +97,16 @@ function copyText() {
   const totalR = document.getElementById('totalReceipt').textContent;
   const totalC = document.getElementById('totalCharge').textContent;
   const text = `[식대 청구 — ${label}]\n영수증 총액: ${totalR}\n청구 총액: ${totalC}`;
-  navigator.clipboard.writeText(text).then(() => {
-    const status = document.getElementById('actionStatus');
-    status.style.display = 'block';
-    status.textContent = '✅ 클립보드에 복사됐습니다.';
-  });
+  const status = document.getElementById('actionStatus');
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      status.style.display = 'block';
+      status.textContent = '✅ 클립보드에 복사됐습니다.';
+    })
+    .catch(() => {
+      status.style.display = 'block';
+      status.textContent = '❌ 클립보드 복사에 실패했습니다. 직접 선택해서 복사해주세요.';
+    });
 }
 
 document.getElementById('thisWeekBtn').addEventListener('click', () => loadWeek(0));

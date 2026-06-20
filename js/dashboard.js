@@ -3,31 +3,32 @@ import { getWeekRange, formatDate, getKoreanWeekday, getWeekLabel } from './util
 import { calculateDailyCharge, calculateWeeklyReceiptTotal, calculateWeeklyChargeTotal } from './utils/calc.js';
 
 async function render() {
-  const { monday, friday } = getWeekRange();
-  document.getElementById('weekLabel').textContent = getWeekLabel(monday, friday);
+  try {
+    const { monday, friday } = getWeekRange();
+    document.getElementById('weekLabel').textContent = getWeekLabel(monday, friday);
 
-  const receipts = await getWeekReceipts(formatDate(monday), formatDate(friday));
+    const receipts = await getWeekReceipts(formatDate(monday), formatDate(friday));
 
-  // 합산
-  document.getElementById('totalReceipt').textContent =
-    calculateWeeklyReceiptTotal(receipts).toLocaleString() + '원';
-  document.getElementById('totalCharge').textContent =
-    calculateWeeklyChargeTotal(receipts).toLocaleString() + '원';
+    // 합산
+    document.getElementById('totalReceipt').textContent =
+      calculateWeeklyReceiptTotal(receipts).toLocaleString() + '원';
+    document.getElementById('totalCharge').textContent =
+      calculateWeeklyChargeTotal(receipts).toLocaleString() + '원';
 
-  // 요일별 날짜 목록 (월~금)
-  const days = Array.from({ length: 5 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return formatDate(d);
-  });
+    // 요일별 날짜 목록 (월~금)
+    const days = Array.from({ length: 5 }, (_, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      return formatDate(d);
+    });
 
-  const grid = document.getElementById('weekGrid');
-  grid.innerHTML = days.map(dateStr => {
-    const receipt = receipts.find(r => r.date === dateStr);
-    const weekday = getKoreanWeekday(dateStr);
+    const grid = document.getElementById('weekGrid');
+    grid.innerHTML = days.map(dateStr => {
+      const receipt = receipts.find(r => r.date === dateStr);
+      const weekday = getKoreanWeekday(dateStr);
 
-    if (!receipt) {
-      return `
+      if (!receipt) {
+        return `
         <div class="card card--sm">
           <div style="display:flex; justify-content:space-between; align-items:center">
             <strong>${weekday}</strong>
@@ -36,10 +37,10 @@ async function render() {
           <p class="text-muted mt-8" style="font-size:14px">${dateStr}</p>
         </div>
       `;
-    }
+      }
 
-    const charge = calculateDailyCharge(receipt.participants.length);
-    return `
+      const charge = calculateDailyCharge(receipt.participants.length);
+      return `
       <div class="card card--sm">
         ${receipt.image_url ? `<img class="receipt-thumb" src="${receipt.image_url}" alt="영수증">` : ''}
         <div style="display:flex; justify-content:space-between; align-items:center">
@@ -54,7 +55,10 @@ async function render() {
         </div>
       </div>
     `;
-  }).join('');
+    }).join('');
+  } catch (e) {
+    document.getElementById('weekGrid').innerHTML = '<div class="card text-muted">데이터를 불러오지 못했습니다. Supabase 설정을 확인하세요.</div>';
+  }
 }
 
 render();

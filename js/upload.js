@@ -20,21 +20,25 @@ let currentFile = null;
 
 // 팀원 체크박스 렌더링
 async function renderMembers() {
-  const members = await getTeamMembers();
-  memberGroup.innerHTML = members.map(m => `
+  try {
+    const members = await getTeamMembers();
+    memberGroup.innerHTML = members.map(m => `
     <label class="checkbox-chip" data-name="${m.name}">
       <input type="checkbox" value="${m.name}">
       ${m.name}
     </label>
   `).join('');
 
-  memberGroup.querySelectorAll('.checkbox-chip').forEach(chip => {
-    const cb = chip.querySelector('input');
-    cb.addEventListener('change', () => {
-      chip.classList.toggle('checkbox-chip--checked', cb.checked);
-      updateChargePreview();
+    memberGroup.querySelectorAll('.checkbox-chip').forEach(chip => {
+      const cb = chip.querySelector('input');
+      cb.addEventListener('change', () => {
+        chip.classList.toggle('checkbox-chip--checked', cb.checked);
+        updateChargePreview();
+      });
     });
-  });
+  } catch (e) {
+    memberGroup.innerHTML = '<p class="text-muted">팀원 목록을 불러오지 못했습니다.</p>';
+  }
 }
 
 function updateChargePreview() {
@@ -113,7 +117,8 @@ saveBtn.addEventListener('click', async () => {
   saveStatus.textContent = '저장 중...';
 
   try {
-    const filename = `${date}_${Date.now()}.jpg`;
+    const ext = currentFile.type.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+    const filename = `${date}_${Date.now()}.${ext}`;
     const imageUrl = await uploadReceiptImage(currentFile, filename);
     await saveReceipt({ date, amount, imageUrl, participants });
     saveStatus.textContent = '✅ 저장 완료!';

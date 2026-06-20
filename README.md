@@ -147,7 +147,7 @@ https://<your-username>.github.io/team-receipt/
 - **Backend:** Supabase (PostgreSQL)
 - **Storage:** Supabase Storage
 - **OCR:** Tesseract.js
-- **Image Processing:** heic2any, sharp (HEIC 변환)
+- **Image Processing:** heic2any (HEIC 변환)
 - **Deployment:** GitHub Pages
 
 ---
