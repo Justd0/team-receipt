@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
+
+:root {
+  --color-canvas: #f8f9fa;
+  --color-card: #ffffff;
+  --color-charcoal: #202124;
+  --color-graphite: #3c4043;
+  --color-slate: #5f6368;
+  --color-mist: #dadce0;
+  --color-blue: #1a73e8;
+  --color-blue-deep: #1967d2;
+  --color-success: #188038;
+  --color-danger: #d93025;
+
+  --font: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 24px;
+  --radius-pill: 200px;
+
+  --shadow-none: none;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--color-canvas);
+  color: var(--color-charcoal);
+  font-size: 16px;
+  line-height: 1.56;
+  letter-spacing: 0.017em;
+  min-height: 100vh;
+}
+
+/* 레이아웃 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* 네비게이션 */
+.nav {
+  height: 64px;
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-mist);
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav__inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav__logo {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  text-decoration: none;
+}
+.nav__links {
+  display: flex;
+  gap: 8px;
+}
+.nav__link {
+  font-size: 14px;
+  color: var(--color-slate);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+}
+.nav__link:hover { background: var(--color-canvas); color: var(--color-charcoal); }
+.nav__link--active { color: var(--color-charcoal); font-weight: 500; }
+
+/* 카드 */
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-mist);
+  padding: 32px;
+}
+.card--sm { padding: 20px 24px; border-radius: 16px; }
+
+/* 버튼 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 24px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+.btn--primary {
+  background: var(--color-blue);
+  color: #fff;
+}
+.btn--primary:hover { background: var(--color-blue-deep); }
+.btn--ghost {
+  background: transparent;
+  border: 1px solid var(--color-mist);
+  color: var(--color-blue);
+}
+.btn--ghost:hover { background: var(--color-canvas); border-color: var(--color-blue); }
+.btn--full { width: 100%; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 입력 */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field__label { font-size: 14px; font-weight: 500; color: var(--color-graphite); }
+.field__input {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-mist);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 16px;
+  color: var(--color-charcoal);
+  background: var(--color-card);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field__input:focus { border-color: var(--color-blue); box-shadow: 0 0 0 3px rgba(26,115,232,0.12); }
+.field__hint { font-size: 12px; color: var(--color-slate); letter-spacing: 0.043em; }
+
+/* 체크박스 그룹 */
+.checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.checkbox-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--color-mist);
+  border-radius: 9999px;
+  font-size: 14px;
+  color: var(--color-graphite);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+.checkbox-chip input { display: none; }
+.checkbox-chip--checked {
+  background: var(--color-blue);
+  border-color: var(--color-blue);
+  color: #fff;
+}
+
+/* 배지 */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.043em;
+}
+.badge--success { background: #e6f4ea; color: var(--color-success); }
+.badge--pending { background: #fef7e0; color: #b06000; }
+
+/* 요일 카드 그리드 */
+.week-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+@media (min-width: 768px) {
+  .week-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1100px) {
+  .week-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 합산 패널 */
+.summary-panel {
+  background: var(--color-card);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--radius-lg);
+  padding: 24px 32px;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.summary-item { display: flex; flex-direction: column; gap: 4px; }
+.summary-item__label { font-size: 12px; color: var(--color-slate); letter-spacing: 0.043em; }
+.summary-item__value { font-size: 22px; font-weight: 500; color: var(--color-charcoal); }
+
+/* 이미지 업로드 영역 */
+.upload-zone {
+  border: 2px dashed var(--color-mist);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.upload-zone:hover, .upload-zone--dragover {
+  border-color: var(--color-blue);
+  background: rgba(26,115,232,0.04);
+}
+.upload-zone__icon { font-size: 48px; margin-bottom: 12px; }
+.upload-zone__text { font-size: 16px; color: var(--color-graphite); }
+.upload-zone__hint { font-size: 12px; color: var(--color-slate); margin-top: 4px; }
+
+/* 로딩 스피너 */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--color-mist);
+  border-top-color: var(--color-blue);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 썸네일 */
+.receipt-thumb {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--color-mist);
+  margin-bottom: 12px;
+}
+
+/* 유틸 */
+.text-muted { color: var(--color-slate); font-size: 14px; }
+.text-blue { color: var(--color-blue); }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.page-title {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  letter-spacing: -0.017em;
+  line-height: 1.2;
+}
+.section-gap { padding: 40px 0; }
