@@ -15,14 +15,16 @@ export async function extractReceiptData(file) {
     'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js'
   );
   const worker = await createWorker('kor+eng');
-  const { data: { text } } = await worker.recognize(file);
-  await worker.terminate();
-
-  return {
-    date: extractDate(text),
-    amount: extractAmount(text),
-    rawText: text,
-  };
+  try {
+    const { data: { text } } = await worker.recognize(file);
+    return {
+      date: extractDate(text),
+      amount: extractAmount(text),
+      rawText: text,
+    };
+  } finally {
+    await worker.terminate();
+  }
 }
 
 function extractDate(text) {
