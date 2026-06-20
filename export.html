@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주간 내보내기 — Team Receipt</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">🧾 Team Receipt</a>
+      <div class="nav__links">
+        <a href="index.html" class="nav__link">홈</a>
+        <a href="upload.html" class="nav__link">업로드</a>
+        <a href="export.html" class="nav__link nav__link--active">내보내기</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container section-gap">
+    <h1 class="page-title">주간 내보내기</h1>
+
+    <!-- 주차 선택 -->
+    <div style="display:flex; gap:8px; margin-top:24px">
+      <button class="btn btn--primary" id="thisWeekBtn">이번 주</button>
+      <button class="btn btn--ghost" id="lastWeekBtn">지난 주</button>
+    </div>
+
+    <!-- 청구 요약 -->
+    <div class="card mt-24" id="summaryCard">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h2 style="font-size:18px; font-weight:500" id="weekLabel">-</h2>
+      </div>
+      <div id="dayRows" class="mt-16"></div>
+      <div class="summary-panel" style="margin-top:16px">
+        <div class="summary-item">
+          <span class="summary-item__label">영수증 총액</span>
+          <span class="summary-item__value" id="totalReceipt">-</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-item__label">청구 총액</span>
+          <span class="summary-item__value text-blue" id="totalCharge">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 액션 버튼 -->
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:24px">
+      <button class="btn btn--primary" id="downloadBtn">📦 ZIP 다운로드</button>
+      <button class="btn btn--ghost" id="copyBtn">📋 청구 내역 복사</button>
+    </div>
+    <div id="actionStatus" class="text-muted mt-8" style="display:none"></div>
+  </div>
+
+  <script type="module" src="js/export.js"></script>
+</body>
+</html>
