@@ -29,9 +29,8 @@ async function renderMembers() {
   `).join('');
 
   memberGroup.querySelectorAll('.checkbox-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const cb = chip.querySelector('input');
-      cb.checked = !cb.checked;
+    const cb = chip.querySelector('input');
+    cb.addEventListener('change', () => {
       chip.classList.toggle('checkbox-chip--checked', cb.checked);
       updateChargePreview();
     });
@@ -49,6 +48,14 @@ function updateChargePreview() {
 }
 
 async function handleFile(file) {
+  dateInput.value = '';
+  amountInput.value = '';
+  memberGroup.querySelectorAll('input').forEach(cb => {
+    cb.checked = false;
+    cb.closest('.checkbox-chip').classList.remove('checkbox-chip--checked');
+  });
+  chargePreview.style.display = 'none';
+
   currentFile = file;
 
   // 미리보기
@@ -70,6 +77,7 @@ async function handleFile(file) {
   } catch (e) {
     ocrStatus.innerHTML = '⚠️ OCR 실패. 날짜와 금액을 직접 입력하세요.';
     dateInput.value = formatDate(new Date());
+    amountInput.value = '';
   } finally {
     saveBtn.disabled = false;
   }
