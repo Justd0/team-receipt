@@ -114,6 +114,14 @@ function openModal(dateStr, receiptMap) {
       </div>`;
     }).join('');
 
+    body.querySelectorAll('.receipt-item__thumb').forEach(img => {
+      img.addEventListener('click', () => {
+        const lightbox = document.getElementById('lightbox');
+        document.getElementById('lightboxImg').src = img.src;
+        lightbox.style.display = 'flex';
+      });
+    });
+
     body.querySelectorAll('.btn--danger').forEach(btn => {
       btn.addEventListener('click', async () => {
         if (!confirm('이 영수증을 삭제하시겠습니까?')) return;
@@ -240,6 +248,14 @@ async function render() {
     });
     modal.addEventListener('click', e => {
       if (e.target === modal) modal.style.display = 'none';
+    });
+
+    const lightbox = document.getElementById('lightbox');
+    document.getElementById('lightboxClose').addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+    lightbox.addEventListener('click', e => {
+      if (e.target === lightbox) lightbox.style.display = 'none';
     });
   } catch (e) {
     container.innerHTML = '<div class="card text-muted">데이터를 불러오지 못했습니다.</div>';
