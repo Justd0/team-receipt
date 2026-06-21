@@ -1,7 +1,8 @@
-import { supabase } from './supabase.js';
-import { deleteReceipt } from './supabase.js';
+import { supabase, deleteReceipt, updateReceipt, getTeamMembers } from './supabase.js';
 import { formatDate } from './utils/date-utils.js';
 import { calculateDailyCharge, calculateWeeklyReceiptTotal, calculateWeeklyChargeTotal } from './utils/calc.js';
+
+let teamMembers = [];
 
 async function getDateRangeReceipts(start, end) {
   const { data, error } = await supabase
@@ -109,7 +110,10 @@ function openModal(dateStr, receiptMap) {
             <span class="text-muted" style="font-size:13px">${r.participants.join(', ')} (${r.participants.length}명)</span>
             <span style="font-size:13px;color:var(--color-blue)">청구 ${charge.toLocaleString()}원</span>
           </div>
-          <button class="btn btn--sm btn--danger" data-id="${r.id}" data-url="${r.image_url || ''}">삭제</button>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn--sm btn--ghost btn--edit" data-id="${r.id}">수정</button>
+            <button class="btn btn--sm btn--danger" data-id="${r.id}" data-url="${r.image_url || ''}">삭제</button>
+          </div>
         </div>
       </div>`;
     }).join('');
@@ -119,6 +123,76 @@ function openModal(dateStr, receiptMap) {
         const lightbox = document.getElementById('lightbox');
         document.getElementById('lightboxImg').src = img.src;
         lightbox.style.display = 'flex';
+      });
+    });
+
+    body.querySelectorAll('.btn--edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const r = (receiptMap[dateStr] || []).find(r => r.id === id);
+        if (!r) return;
+        const item = btn.closest('.receipt-item');
+        const memberChips = teamMembers.map(m => {
+          const checked = r.participants.includes(m.name) ? 'checkbox-chip--checked' : '';
+          return `<label class="checkbox-chip ${checked}" data-name="${m.name}">
+            <input type="checkbox" value="${m.name}" ${r.participants.includes(m.name) ? 'checked' : ''}>
+            ${m.name}
+          </label>`;
+        }).join('');
+
+        item.innerHTML = `
+          <div class="field">
+            <label class="field__label">날짜</label>
+            <input type="date" class="field__input edit-date" value="${r.date}">
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label class="field__label">금액 (원)</label>
+            <input type="number" class="field__input edit-amount" value="${r.amount}" min="0">
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label class="field__label">참여 팀원</label>
+            <div class="checkbox-group edit-members">${memberChips}</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <button class="btn btn--primary btn--save" style="flex:1">저장</button>
+            <button class="btn btn--ghost btn--cancel">취소</button>
+          </div>
+          <div class="edit-status text-muted" style="font-size:13px;margin-top:8px;display:none"></div>`;
+
+        item.querySelectorAll('.checkbox-chip').forEach(chip => {
+          chip.querySelector('input').addEventListener('change', e => {
+            chip.classList.toggle('checkbox-chip--checked', e.target.checked);
+          });
+        });
+
+        item.querySelector('.btn--cancel').addEventListener('click', renderBody);
+
+        item.querySelector('.btn--save').addEventListener('click', async () => {
+          const date = item.querySelector('.edit-date').value;
+          const amount = parseInt(item.querySelector('.edit-amount').value, 10);
+          const participants = [...item.querySelectorAll('.edit-members input:checked')].map(cb => cb.value);
+          if (!date) return alert('날짜를 입력하세요.');
+          if (!amount || amount <= 0) return alert('금액을 입력하세요.');
+          if (participants.length === 0) return alert('팀원을 한 명 이상 선택하세요.');
+
+          const saveBtn = item.querySelector('.btn--save');
+          const status = item.querySelector('.edit-status');
+          saveBtn.disabled = true;
+          status.style.display = 'block';
+          status.textContent = '저장 중...';
+
+          try {
+            await updateReceipt(id, { date, amount, participants });
+            const idx = receiptMap[dateStr].findIndex(x => x.id === id);
+            if (idx !== -1) receiptMap[dateStr][idx] = { ...receiptMap[dateStr][idx], date, amount, participants };
+            renderBody();
+            renderCalendar(receiptMap);
+            renderMonthlySummary(receiptMap);
+          } catch (e) {
+            status.textContent = '저장 실패: ' + e.message;
+            saveBtn.disabled = false;
+          }
+        });
       });
     });
 
@@ -236,6 +310,7 @@ function renderMonthlySummary(receiptMap) {
 async function render() {
   const container = document.getElementById('calendarContainer');
   try {
+    teamMembers = await getTeamMembers();
     const receipts = await getDateRangeReceipts('2026-06-01', '2026-07-31');
     const receiptMap = buildReceiptMap(receipts);
 

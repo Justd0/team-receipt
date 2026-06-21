@@ -41,6 +41,14 @@ export async function saveReceipt({ date, amount, imageUrl, participants }) {
   if (error) throw error;
 }
 
+export async function updateReceipt(id, { date, amount, participants }) {
+  const { error } = await supabase
+    .from('receipts')
+    .update({ date, amount, participants })
+    .eq('id', id);
+  if (error) throw error;
+}
+
 export async function deleteReceipt(id, imageUrl) {
   if (imageUrl) {
     const marker = '/receipts/';
