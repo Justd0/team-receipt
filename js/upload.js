@@ -150,4 +150,17 @@ saveBtn.addEventListener('click', async () => {
   }
 });
 
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+previewImg.addEventListener('click', () => {
+  lightboxImg.src = previewImg.src;
+  lightbox.style.display = 'flex';
+});
+document.getElementById('lightboxClose').addEventListener('click', () => {
+  lightbox.style.display = 'none';
+});
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) lightbox.style.display = 'none';
+});
+
 renderMembers();
