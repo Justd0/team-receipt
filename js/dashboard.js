@@ -149,24 +149,31 @@ function renderCalendar(receiptMap) {
   });
 }
 
-function getMonthWeeks(year, month) {
+function getMonthWeeks(year, month, { trimCrossMonthEnd = false, fullWeekStart = false } = {}) {
   const firstDay = new Date(year, month - 1, 1);
   const lastDay = new Date(year, month, 0);
   const diffToMonday = firstDay.getDay() === 0 ? -6 : 1 - firstDay.getDay();
   let monday = new Date(firstDay);
   monday.setDate(firstDay.getDate() + diffToMonday);
 
+  const toMD = d => `${d.getMonth() + 1}/${d.getDate()}`;
   const weeks = [];
   let weekNum = 1;
   while (monday <= lastDay) {
     const friday = new Date(monday);
     friday.setDate(monday.getDate() + 4);
-    const weekStart = monday < firstDay ? firstDay : new Date(monday);
-    const weekEnd = friday > lastDay ? new Date(lastDay) : new Date(friday);
+
+    if (trimCrossMonthEnd && friday > lastDay) {
+      monday = new Date(monday);
+      monday.setDate(monday.getDate() + 7);
+      continue;
+    }
+
+    const weekStart = (fullWeekStart || monday >= firstDay) ? new Date(monday) : new Date(firstDay);
     weeks.push({
       startStr: formatDate(weekStart),
-      endStr: formatDate(weekEnd),
-      label: `${weekNum}주차 (${month}/${weekStart.getDate()} ~ ${month}/${weekEnd.getDate()})`,
+      endStr: formatDate(friday),
+      label: `${weekNum}주차 (${toMD(weekStart)} ~ ${toMD(friday)})`,
     });
     weekNum++;
     monday = new Date(monday);
@@ -177,18 +184,18 @@ function getMonthWeeks(year, month) {
 
 function renderMonthlySummary(receiptMap) {
   const months = [
-    { year: 2026, month: 6, label: '6월' },
-    { year: 2026, month: 7, label: '7월' },
+    { year: 2026, month: 6, label: '6월', weekOpts: { trimCrossMonthEnd: true } },
+    { year: 2026, month: 7, label: '7월', weekOpts: { fullWeekStart: true } },
   ];
 
-  const html = months.map(({ year, month, label }) => {
+  const html = months.map(({ year, month, label, weekOpts }) => {
     const prefix = `${year}-${String(month).padStart(2, '0')}`;
     const monthReceipts = Object.entries(receiptMap)
       .filter(([d]) => d.startsWith(prefix))
       .flatMap(([, rs]) => rs);
     const monthChargeTotal = calculateWeeklyChargeTotal(monthReceipts);
 
-    const weeks = getMonthWeeks(year, month);
+    const weeks = getMonthWeeks(year, month, weekOpts);
     const weekRows = weeks.map(w => {
       const weekReceipts = Object.entries(receiptMap)
         .filter(([d]) => d >= w.startStr && d <= w.endStr)
