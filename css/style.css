@@ -241,6 +241,57 @@ body {
   margin-bottom: 12px;
 }
 
+/* 월별 아코디언 */
+.month-accordion {
+  background: var(--color-card);
+  border: 1px solid var(--color-mist);
+  border-radius: var(--radius-lg);
+}
+.month-accordion + .month-accordion {
+  margin-top: 12px;
+}
+.month-accordion__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  user-select: none;
+}
+.month-accordion__header::-webkit-details-marker { display: none; }
+.accordion-chevron {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--color-slate);
+  transition: transform 0.2s;
+  margin-right: 4px;
+}
+details[open] .accordion-chevron {
+  transform: rotate(90deg);
+}
+.month-accordion__body {
+  padding: 0 28px 16px;
+  border-top: 1px solid var(--color-mist);
+}
+.week-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-canvas);
+  font-size: 13px;
+}
+.week-row:last-child { border-bottom: none; }
+.week-row__label { color: var(--color-graphite); font-weight: 500; }
+.week-row__values { color: var(--color-charcoal); }
+.week-row__values--empty { color: var(--color-slate); }
+
 /* 캘린더 */
 .cal-wrap {
   display: grid;

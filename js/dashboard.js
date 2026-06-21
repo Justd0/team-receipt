@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
 import { deleteReceipt } from './supabase.js';
 import { formatDate } from './utils/date-utils.js';
-import { calculateDailyCharge, calculateWeeklyChargeTotal } from './utils/calc.js';
+import { calculateDailyCharge, calculateWeeklyReceiptTotal, calculateWeeklyChargeTotal } from './utils/calc.js';
 
 async function getDateRangeReceipts(start, end) {
   const { data, error } = await supabase
@@ -125,7 +125,7 @@ function openModal(dateStr, receiptMap) {
           if (receiptMap[dateStr].length === 0) delete receiptMap[dateStr];
           renderBody();
           renderCalendar(receiptMap);
-          updateTotals(receiptMap);
+          renderMonthlySummary(receiptMap);
           if (!receiptMap[dateStr]) modal.style.display = 'none';
         } catch (e) {
           alert('삭제 실패: ' + e.message);
@@ -149,14 +149,73 @@ function renderCalendar(receiptMap) {
   });
 }
 
-function updateTotals(receiptMap) {
-  const allReceipts = Object.values(receiptMap).flat();
-  const june = allReceipts.filter(r => r.date.startsWith('2026-06'));
-  const july = allReceipts.filter(r => r.date.startsWith('2026-07'));
-  document.getElementById('juneTotal').textContent =
-    calculateWeeklyChargeTotal(june).toLocaleString() + '원';
-  document.getElementById('julyTotal').textContent =
-    calculateWeeklyChargeTotal(july).toLocaleString() + '원';
+function getMonthWeeks(year, month) {
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
+  const diffToMonday = firstDay.getDay() === 0 ? -6 : 1 - firstDay.getDay();
+  let monday = new Date(firstDay);
+  monday.setDate(firstDay.getDate() + diffToMonday);
+
+  const weeks = [];
+  let weekNum = 1;
+  while (monday <= lastDay) {
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    const weekStart = monday < firstDay ? firstDay : new Date(monday);
+    const weekEnd = friday > lastDay ? new Date(lastDay) : new Date(friday);
+    weeks.push({
+      startStr: formatDate(weekStart),
+      endStr: formatDate(weekEnd),
+      label: `${weekNum}주차 (${month}/${weekStart.getDate()} ~ ${month}/${weekEnd.getDate()})`,
+    });
+    weekNum++;
+    monday = new Date(monday);
+    monday.setDate(monday.getDate() + 7);
+  }
+  return weeks;
+}
+
+function renderMonthlySummary(receiptMap) {
+  const months = [
+    { year: 2026, month: 6, label: '6월' },
+    { year: 2026, month: 7, label: '7월' },
+  ];
+
+  const html = months.map(({ year, month, label }) => {
+    const prefix = `${year}-${String(month).padStart(2, '0')}`;
+    const monthReceipts = Object.entries(receiptMap)
+      .filter(([d]) => d.startsWith(prefix))
+      .flatMap(([, rs]) => rs);
+    const monthChargeTotal = calculateWeeklyChargeTotal(monthReceipts);
+
+    const weeks = getMonthWeeks(year, month);
+    const weekRows = weeks.map(w => {
+      const weekReceipts = Object.entries(receiptMap)
+        .filter(([d]) => d >= w.startStr && d <= w.endStr)
+        .flatMap(([, rs]) => rs);
+      const receiptTotal = calculateWeeklyReceiptTotal(weekReceipts);
+      const chargeTotal = calculateWeeklyChargeTotal(weekReceipts);
+      const isEmpty = weekReceipts.length === 0;
+      return `<div class="week-row">
+        <span class="week-row__label">${w.label}</span>
+        <span class="week-row__values${isEmpty ? ' week-row__values--empty' : ''}">
+          ${isEmpty
+            ? '영수증 없음'
+            : `영수증 ${receiptTotal.toLocaleString()}원 / 청구 <strong class="text-blue">${chargeTotal.toLocaleString()}원</strong>`}
+        </span>
+      </div>`;
+    }).join('');
+
+    return `<details class="month-accordion">
+      <summary class="month-accordion__header">
+        <span><span class="accordion-chevron">▶</span> ${label}</span>
+        <span class="text-blue" style="font-size:18px;font-weight:500">${monthChargeTotal.toLocaleString()}원</span>
+      </summary>
+      <div class="month-accordion__body">${weekRows}</div>
+    </details>`;
+  }).join('');
+
+  document.getElementById('monthlySummary').innerHTML = html;
 }
 
 async function render() {
@@ -165,7 +224,7 @@ async function render() {
     const receipts = await getDateRangeReceipts('2026-06-01', '2026-07-31');
     const receiptMap = buildReceiptMap(receipts);
 
-    updateTotals(receiptMap);
+    renderMonthlySummary(receiptMap);
     renderCalendar(receiptMap);
 
     const modal = document.getElementById('modal');
